@@ -30,88 +30,22 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
       
-      - name: Fix Tailwind CSS configuration
+      # Copy the exact CSS from the working Manus version
+      - name: Copy CSS from working version
         run: |
-          # Update tailwind.config.ts to use direct color values instead of HSL
-          cat > tailwind.config.ts << 'EOL'
-          import type { Config } from "tailwindcss";
+          # Download the CSS from the working Manus version
+          curl -o src/app/globals.css https://czctwcvo.manus.space/_next/static/css/74b95eaa14662645.css
+          
+          # Add the original imports back at the top
+          sed -i '1s/^/@import url("https:\/\/fonts.googleapis.com\/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap");\n\n@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\n/' src/app/globals.css
 
-          export default {
-            darkMode: ["class"],
-            content: [
-              "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-              "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-              "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-            ],
-            theme: {
-              extend: {
-                colors: {
-                  background: 'var(--background)',
-                  foreground: 'var(--text-primary)',
-                  card: {
-                    DEFAULT: 'var(--card-bg)',
-                    foreground: 'var(--text-primary)'
-                  },
-                  popover: {
-                    DEFAULT: 'var(--card-bg)',
-                    foreground: 'var(--text-primary)'
-                  },
-                  primary: {
-                    DEFAULT: 'var(--primary)',
-                    foreground: 'white'
-                  },
-                  secondary: {
-                    DEFAULT: 'var(--secondary)',
-                    foreground: 'white'
-                  },
-                  muted: {
-                    DEFAULT: 'var(--border)',
-                    foreground: 'var(--text-secondary)'
-                  },
-                  accent: {
-                    DEFAULT: 'var(--primary-light)',
-                    foreground: 'var(--text-primary)'
-                  },
-                  destructive: {
-                    DEFAULT: 'var(--error)',
-                    foreground: 'white'
-                  },
-                  border: 'var(--border)',
-                  input: 'var(--border)',
-                  ring: 'var(--border-focus)',
-                },
-                borderRadius: {
-                  lg: 'var(--radius)',
-                  md: 'calc(var(--radius) - 2px)',
-                  sm: 'calc(var(--radius) - 4px)'
-                },
-                keyframes: {
-                  'accordion-down': {
-                    from: { height: '0' },
-                    to: { height: 'var(--radix-accordion-content-height)' }
-                  },
-                  'accordion-up': {
-                    from: { height: 'var(--radix-accordion-content-height)' },
-                    to: { height: '0' }
-                  }
-                },
-                animation: {
-                  'accordion-down': 'accordion-down 0.2s ease-out',
-                  'accordion-up': 'accordion-up 0.2s ease-out'
-                }
-              }
-            },
-            plugins: [require("tailwindcss-animate")],
-          } satisfies Config;
-          EOL
-
+      # Use a simple next.config.js without basePath for custom domain
       - name: Create next.config.js with correct configuration for custom domain
         run: |
           cat > next.config.js << 'EOL'
           /** @type {import('next').NextConfig} */
           const nextConfig = {
             output: 'export',
-            // basePath and assetPrefix are NOT needed for custom domains on GitHub Pages
             images: {
               unoptimized: true,
             },
