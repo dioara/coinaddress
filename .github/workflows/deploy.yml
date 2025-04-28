@@ -30,14 +30,15 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
       
-      - name: Create next.config.js with correct configuration
+      - name: Create next.config.js with correct configuration for custom domain
         run: |
           cat > next.config.js << 'EOL'
           /** @type {import('next').NextConfig} */
           const nextConfig = {
             output: 'export',
-            basePath: process.env.NODE_ENV === 'production' ? '/coinaddress' : '',
-            assetPrefix: process.env.NODE_ENV === 'production' ? '/coinaddress/' : '',
+            // basePath and assetPrefix are NOT needed for custom domains on GitHub Pages
+            // basePath: process.env.NODE_ENV === 'production' ? '/coinaddress' : '',
+            // assetPrefix: process.env.NODE_ENV === 'production' ? '/coinaddress/' : '',
             images: {
               unoptimized: true,
             },
@@ -52,7 +53,7 @@ jobs:
         env:
           NODE_ENV: production
 
-      - name: Add .nojekyll file
+      - name: Add .nojekyll file and CNAME
         run: |
           touch out/.nojekyll
           echo "coinaddress.io" > out/CNAME
