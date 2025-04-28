@@ -16,10 +16,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          # Removed cache: 'npm' line
+          # No cache to avoid dependency lock file issues
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
+        # Using --legacy-peer-deps flag to bypass React version conflicts
 
       - name: Build
         run: npm run build
