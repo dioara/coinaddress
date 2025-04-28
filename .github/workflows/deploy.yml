@@ -27,10 +27,10 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
       
-      # Configure Next.js for static export
+      # Configure Next.js for static export - using correct JavaScript syntax
       - name: Configure Next.js for static export
         run: |
-          echo '{ "output": "export" }' > next.config.mjs
+          echo 'export default { output: "export" };' > next.config.mjs
 
       # Build the project
       - name: Build
