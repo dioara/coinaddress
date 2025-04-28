@@ -33,10 +33,10 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
       
-      # Configure Next.js for static export - using correct JavaScript syntax
+      # Configure Next.js for static export with basePath for GitHub Pages
       - name: Configure Next.js for static export
         run: |
-          echo 'export default { output: "export" };' > next.config.mjs
+          echo 'export default { output: "export", basePath: "/coinaddress", assetPrefix: "/coinaddress/" };' > next.config.mjs
 
       # Build the project
       - name: Build
