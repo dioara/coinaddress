@@ -1,13 +1,11 @@
-/** @type {import("next").NextConfig} */
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "export", // Enables static export
-  // Optional: Add basePath if deploying to a subdirectory like username.github.io/repo-name
-  // basePath: "/coinaddress-app", 
-  // Optional: Add assetPrefix if using a custom domain with GitHub Pages
-  // assetPrefix: "https://coinaddress.io",
+  output: 'export',
+  // No basePath or assetPrefix needed for custom domain on GitHub Pages
   images: {
-    unoptimized: true, // Required for static export
+    unoptimized: true,
   },
+  trailingSlash: true,
 };
 
 module.exports = nextConfig;
