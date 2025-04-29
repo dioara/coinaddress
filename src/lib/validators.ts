@@ -14,10 +14,11 @@ export const validateBitcoinAddress = (address: string): boolean => {
   return regex.test(address);
 };
 
-// Ethereum address validation
+// Ethereum address validation (FIXED: Added 'i' flag for case-insensitivity)
 export const validateEthereumAddress = (address: string): boolean => {
   // Ethereum addresses are 42 characters long including the '0x' prefix
-  const regex = /^0x[a-fA-F0-9]{40}$/;
+  // Regex made case-insensitive to support EIP-55 checksummed addresses
+  const regex = /^0x[a-fA-F0-9]{40}$/i;
   return regex.test(address);
 };
 
@@ -79,7 +80,7 @@ export const validatePolkadotAddress = (address: string): boolean => {
 export const validateBinanceCoinAddress = (address: string): boolean => {
   // BNB addresses on Binance Smart Chain are Ethereum-style addresses
   // BNB addresses on Binance Chain start with 'bnb'
-  const ethRegex = /^0x[a-fA-F0-9]{40}$/;
+  const ethRegex = /^0x[a-fA-F0-9]{40}$/i; // Also made case-insensitive here for consistency
   const bnbRegex = /^bnb[a-zA-Z0-9]{39}$/;
   return ethRegex.test(address) || bnbRegex.test(address);
 };
@@ -140,6 +141,12 @@ export const getAddressType = (address: string): string => {
     if (address.startsWith('bc1')) return 'Bitcoin (Bech32)';
   }
   
+  // Check Ethereum after BNB to avoid misidentifying BNB (BEP20) as generic Ethereum
+  if (validateBinanceCoinAddress(address)) {
+    if (address.startsWith('0x')) return 'Binance Coin (BEP20)';
+    if (address.startsWith('bnb')) return 'Binance Coin (BEP2)';
+  }
+
   if (validateEthereumAddress(address)) {
     return 'Ethereum';
   }
@@ -174,11 +181,6 @@ export const getAddressType = (address: string): string => {
     return 'Polkadot';
   }
   
-  if (validateBinanceCoinAddress(address)) {
-    if (address.startsWith('0x')) return 'Binance Coin (BEP20)';
-    if (address.startsWith('bnb')) return 'Binance Coin (BEP2)';
-  }
-  
   if (validateTronAddress(address)) {
     return 'Tron';
   }
@@ -190,5 +192,7 @@ export const getAddressType = (address: string): string => {
 export const hasValidChecksum = (address: string, type: string): boolean => {
   // This is a simplified implementation
   // In a real-world scenario, we would implement proper checksum validation for each coin type
+  // For now, just check basic format validity
   return validateAddress(address, type);
 };
+
